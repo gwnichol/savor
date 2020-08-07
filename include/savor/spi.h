@@ -11,17 +11,17 @@
 #   define DD_SCK  PORTB5
 #   define DD_SS   PORTB2
 #else
-#	warning "Device not currently supported"
+#   warning "Device not currently supported"
 #endif
 
 typedef enum {
-	FREQ_4,
-	FREQ_16,
-	FREQ_64,
-	FREQ_128,
-	FREQ_2,
-	FREQ_8,
-	FREQ_32
+    FREQ_4,
+    FREQ_16,
+    FREQ_64,
+    FREQ_128,
+    FREQ_2,
+    FREQ_8,
+    FREQ_32
 } SPI_FREQ_T;
 
 void SPI_MasterInit(void);
