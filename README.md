@@ -47,3 +47,21 @@ add_custom_command(TARGET flash USES_TERMINAL COMMAND "avrdude -c stk500v2 -P $(
 ```
 
 This requires `avrdude` and `pavr2cmd`. `pavr2cmd` is used for the Pololu AVR Programmer device.
+
+## Serial
+
+This is the primary serial UART library. It ties into stdio so UART can be used as stdout after initialization.
+
+### Usage
+
+Initialization is done with `serial_init(ubrr)`. The UBRR can be calculated with the `serial_ubrr(freq,baud)` macro. It uses the clock frequency and target baud rate to set the serial baud.
+
+After initialization, UART can be used as stdout so the stdio `printf()` function prints to it by default.
+
+## SPI
+
+Currently the SPI module only supports master mode. 
+
+### Usage
+
+Initialization in master is done with `SPI_MasterInit()`. Transmission is done with `SPI_Transceive(char)`, receiving is done with `SPI_Receive()`.
