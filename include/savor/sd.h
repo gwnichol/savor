@@ -3,6 +3,8 @@
 
 // Define the SD SPI Mode Commands that are available to use
 
+#include <avr/io.h>
+
 #define ACMD_FLAG 0x80
 #define ACMD(NUM) NUM | ACMD_FLAG
 
@@ -95,9 +97,9 @@ typedef struct{
         struct {
             uint16_t r7;
             uint8_t echo_back;
-        } r7
-    }
-} SD_RESPONCE
+        } r7;
+    };
+} SD_RESPONCE;
 
 void SD_Initialize(void);
 
