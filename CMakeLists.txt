@@ -13,4 +13,5 @@ endfunction()
 
 add_library_comp(sd src/sd.c include/${COMPOSITE_NAME}/sd.h)
 add_library_comp(spi src/spi.c include/${COMPOSITE_NAME}/spi.h)
+add_library_comp(serial src/serial.c include/${COMPOSITE_NAME}/serial.h)
 
