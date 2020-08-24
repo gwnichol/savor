@@ -76,32 +76,69 @@ typedef enum{
     ACMD51 = ACMD(51), // SEND_SCR, Read the SD Config Register
 } SD_CMD;
 
-// R1 Respose
-#define IN_IDLE_STATE        0
-#define ERASE_RESET          1
-#define ILLEGAL_COMMAND      2
-#define COM_CRC_ERROR        3
-#define ERASE_SEQUENCE_ERROR 4
-#define ADDRESS_ERROR        5
-#define PARAMETER_ERROR      6
-// Bit 7 must be 0 for R1 response
+#define R1 0
+#define R2 1
 
-typedef struct{
-    uint8_t r1;
-    union {
-        uint32_t ocr;
-        struct {
-            uint8_t r2;
-            uint16_t unused;
-        } r2;
-        struct {
-            uint16_t r7;
-            uint8_t echo_back;
-        } r7;
-    };
-} SD_RESPONCE;
 
-void SD_Initialize(void);
+// R1 Response Bits
+#define R1_IN_IDLE_STATE        0
+#define R1_ERASE_RESET          1
+#define R1_ILLEGAL_COMMAND      2
+#define R1_COM_CRC_ERROR        3
+#define R1_ERASE_SEQUENCE_ERROR 4
+#define R1_ADDRESS_ERROR        5
+#define R1_PARAMETER_ERROR      6
+
+// R2 Response Bits
+#define R2_CARD_LOCKED          0
+#define R2_WP_ERASE_SKIP        1
+#define R2_ERROR                2
+#define R2_CC_ERROR             3
+#define R2_CARD_ECC_FAILED      4
+#define R2_WP_VIOLATION         5
+#define R2_ERASE_PARAM          6
+#define R2_OUT_OF_RANGE         7
+
+// Repsonce types and their length
+#define SD_R1 1
+#define SD_R2 2
+#define SD_R3 5
+#define SD_R7 5
+
+// Command Specific Bits or Shifts
+#define CMD8_VHS 8
+#define CMD8_CHECK 0
+#define CMD8_CHECK_BITS 0xA5
+
+extern uint8_t sd_r1;
+extern uint32_t sd_data;
+
+extern volatile uint8_t * sd_port;
+extern uint8_t sd_cs_mask;
+
+
+void SD_Initialize(volatile uint8_t * ddr, volatile uint8_t * port, uint8_t mask);
+
+// Default CRC is Calculated ahead of time
+#define SD_SendCommand(command) ({\
+    switch(command){\
+        case GO_IDLE_STATE:\
+            SD_SendFullCommand(GO_IDLE_STATE, 0x00000000, 0x95, SD_R1); \
+            break;\
+        case SEND_IF_COND:\
+            SD_SendFullCommand(SEND_IF_COND, (0x1 << CMD8_VHS) | (CMD8_CHECK_BITS << CMD8_CHECK), 0x81, SD_R7); \
+            break;\
+        case APP_CMD:\
+            SD_SendFullCommand(APP_CMD, 0x00000000, 0xF1, SD_R1); \
+            break;\
+        default:\
+            SD_SendFullCommand(command, sd_data, 0x00, SD_R1);\
+            break;\
+    }\
+})
+
+void SD_SendFullCommand(SD_CMD command, uint32_t args, uint8_t crc, uint8_t ret_length);
+void SD_SendDummy(char dummy_count);
 
 
 #endif
